@@ -1,0 +1,12 @@
+[
+  { "id": 1, "name": "Иван Иванов", "email": "ivan@example.com", "password": "password321" },
+  { "id": 2, "name": "Мария Петрова", "email": "maria@example.com", "password": "qwerty123" },
+  { "id": 3, "name": "Алексей Сидоров", "email": "alex@example.com", "password": "123456" },
+  { "id": 4, "name": "Ольга Иванова", "email": "olga@example.com", "password": "password" },
+  { "id": 5, "name": "Дмитрий Петров", "email": "dmitry@example.com", "password": "qwertyuiop123" },
+  { "id": 6, "name": "Анна Сидорова", "email": "anna@example.com", "password": "password1234" },
+  { "id": 7, "name": "Сергей Иванов", "email": "sergey@example.com", "password": "qwerty" },
+  { "id": 8, "name": "Елена Петрова", "email": "elena@example.com", "password": "654321" },
+  { "id": 9, "name": "Андрей Сидоров", "email": "andrey@example.com", "password": "password123" },
+  { "id": 10, "name": "Наталья Иванова", "email": "natalia@example.com", "password": "qwertyuiop" }
+]
