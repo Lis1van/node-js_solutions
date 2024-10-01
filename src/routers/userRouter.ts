@@ -1,14 +1,43 @@
 import { Router } from "express";
 
 import { userController } from "../controllers/userController";
+import { commonMiddleware } from "../middlewares/commonMiddleware";
+import { UserValidator } from "../validators/userValidator";
 
-const router = Router();
+// Создание экземпляра маршрутизатора
+const userRouter = Router();
 
-router.get("/", userController.getList);
-router.post("/", userController.create);
+// GET /users - Получение списка пользователей
+userRouter.get("/", userController.getList);
 
-router.get("/:userId", userController.getById);
-router.put("/:userId", userController.updateById);
-router.delete("/:userId", userController.deleteById);
+// POST /users - Создание нового пользователя
+userRouter.post(
+  "/",
+  commonMiddleware.isBodyValid(UserValidator.createUserSchema),
+  userController.create,
+);
 
-export const userRouter = router;
+// GET /users/:userId - Получение пользователя по ID
+userRouter.get(
+  "/:userId",
+  commonMiddleware.isIdValid("userId"),
+  userController.getById,
+);
+
+// PUT /users/:userId - Обновление пользователя по ID
+userRouter.put(
+  "/:userId",
+  commonMiddleware.isIdValid("userId"),
+  commonMiddleware.isBodyValid(UserValidator.updateUserSchema),
+  userController.updateById,
+);
+
+// DELETE /users/:userId - Удаление пользователя по ID
+userRouter.delete(
+  "/:userId",
+  commonMiddleware.isIdValid("userId"),
+  userController.deleteById,
+);
+
+// Экспорт маршрутизатора пользователей
+export { userRouter };

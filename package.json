@@ -12,7 +12,10 @@
   },
   "private": true,
   "dependencies": {
-    "express": "^4.19.2"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "joi": "^17.13.3",
+    "mongoose": "^8.7.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

@@ -1,5 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
+import * as mongoose from "mongoose";
 
+import { config } from "./configs/config";
 import { ApiError } from "./errors/apiError";
 import { userRouter } from "./routers/userRouter";
 
@@ -13,9 +15,14 @@ app.use("/users", userRouter);
 // Обработка ошибок
 app.use(
   "*",
-  (error: ApiError, _req: Request, res: Response, _next: NextFunction) => {
+  (error: Error, _req: Request, res: Response, _next: NextFunction) => {
     const status = error instanceof ApiError ? error.status : 500;
-    res.status(status).send({ error: error.message });
+    res.status(status).send({
+      error: {
+        code: status,
+        message: error.message,
+      },
+    });
   },
 );
 
@@ -24,6 +31,7 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-app.listen(3000, () => {
-  console.log("Сервер запущен на http://localhost:3000");
+app.listen(config.port, async () => {
+  await mongoose.connect(config.mongoose);
+  console.log(`Server is running on http://${config.host}:${config.port}`);
 });
