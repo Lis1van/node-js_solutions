@@ -18,7 +18,7 @@ module.exports = {
   },
   plugins: ["@typescript-eslint/eslint-plugin", "simple-import-sort", "import"],
   rules: {
-    indent: ["error", 2],
+    indent: ["error", 2, { "SwitchCase": 1 }],
     quotes: ["error", "double"],
     semi: ["error", "always"],
     "@typescript-eslint/interface-name-prefix": "off",
@@ -32,7 +32,7 @@ module.exports = {
     "import/newline-after-import": ["error", { count: 1 }],
     "import/no-duplicates": "error",
     "prettier/prettier": ["error", { endOfLine: "auto" }],
-    "no-console": "off",//Когда будет подключен другой метод для логирования, надо вернуть на warn
+    "no-console": "warn",
     "sort-imports": [
       "error",
       {

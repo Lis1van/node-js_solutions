@@ -4,11 +4,9 @@ import { isObjectIdOrHexString } from "mongoose";
 
 import { ApiError } from "../errors/apiError";
 
-// CommonMiddleware представляет общие промежуточные слои для вашего приложения
 class CommonMiddleware {
-  // Метод проверяет, является ли идентификатор действительным ObjectId или HexString
   public isIdValid(key: string) {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return (req: Request, res: Response, next: NextFunction) => {
       try {
         if (!isObjectIdOrHexString(req.params[key])) {
           throw new ApiError("Invalid id", 400);
@@ -19,8 +17,6 @@ class CommonMiddleware {
       }
     };
   }
-
-  // Метод проверяет, является ли тело запроса действительным в соответствии с указанной схемой
   public isBodyValid(validator: ObjectSchema) {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
