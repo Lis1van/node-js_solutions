@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { ITokenPayload } from "../interfaces/tokenInterface";
-import { IRegistration, IUser } from "../interfaces/userInterface";
+import { IUser, UserRegistration } from "../interfaces/userInterface";
 import { authService } from "../services/authService";
 
 class AuthController {
@@ -16,7 +16,7 @@ class AuthController {
   }
   public async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const dto = req.body as IRegistration;
+      const dto = req.body as UserRegistration;
       const result = await authService.register(dto);
       res.status(201).json(result);
     } catch (e) {

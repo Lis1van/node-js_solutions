@@ -13,4 +13,4 @@ export interface IUser {
   updatedAt?: Date;
 }
 
-export type IRegistration = Pick<IUser, "email" | "password">;
+export type UserRegistration = Pick<IUser, "email" | "password">;

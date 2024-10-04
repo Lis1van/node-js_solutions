@@ -1,7 +1,7 @@
 import { EmailEnum } from "../enums/emailEnum";
 import { ApiError } from "../errors/apiError";
 import { ITokenPair, ITokenPayload } from "../interfaces/tokenInterface";
-import { IRegistration, IUser } from "../interfaces/userInterface";
+import { IUser, UserRegistration } from "../interfaces/userInterface";
 import { tokenRepository } from "../repositories/tokenRepository";
 import { userRepository } from "../repositories/userRepository";
 import { emailService } from "./emailService";
@@ -31,7 +31,7 @@ class AuthService {
   }
 
   public async register(
-    dto: IRegistration,
+    dto: UserRegistration,
   ): Promise<{ user: IUser; tokens: ITokenPair }> {
     const user = await userRepository.getByEmail(dto.email);
 

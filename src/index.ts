@@ -33,6 +33,6 @@ process.on("uncaughtException", (err) => {
 });
 
 app.listen(config.port, async () => {
-  await mongoose.connect(config.mongoose);
+  await mongoose.connect(config.MONGOOSE_URI);
   console.log(`Server is running on http://${config.host}:${config.port}`);
 });
