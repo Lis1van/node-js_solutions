@@ -10,7 +10,6 @@ const userFields = {
 };
 
 export class UserValidator {
-  // Схема валидации для создания нового пользователя
   public static createUserSchema = joi.object({
     ...userFields,
     ...{
@@ -21,8 +20,15 @@ export class UserValidator {
     },
   });
 
-  // Схема валидации для обновления пользователя
   public static updateUserSchema = joi.object({
     ...userFields,
+  });
+
+  public static registerUserSchema = joi.object({
+    ...userFields,
+    ...{
+      email: userFields.email.required(),
+      password: userFields.password.required(),
+    },
   });
 }

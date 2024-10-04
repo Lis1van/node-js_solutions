@@ -46,10 +46,8 @@ class UserController {
   }
 
   public async deleteMe(req: Request, res: Response, next: NextFunction) {
-    // console.log("DeleteMe controller triggered");
     try {
       const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
-      // console.log("JWT Payload in controller:", jwtPayload);
       await userService.deleteMe(jwtPayload);
       res.sendStatus(204);
     } catch (e) {

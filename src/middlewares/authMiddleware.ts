@@ -27,8 +27,9 @@ class AuthMiddleware {
       if (!pair) {
         throw new ApiError("Token is not valid", 401);
       }
+      req.res.locals.tokenId = pair._id;
       req.res.locals.jwtPayload = payload;
-      // console.log("Passing request to next middleware/controller");
+      console.log("Passing request to next middleware/controller");
       next();
     } catch (e) {
       next(e);
@@ -55,7 +56,6 @@ class AuthMiddleware {
       if (!pair) {
         throw new ApiError("Token is not valid", 401);
       }
-      // req.res.locals.jwtPayload = payload;
       req.res.locals.payload = payload;
       req.res.locals.refreshToken = refreshToken;
       next();

@@ -14,7 +14,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/users", userRouter);
 app.use("/auth", authRouter);
 
-// Обработка ошибок
 app.use(
   "*",
   (error: Error, _req: Request, res: Response, _next: NextFunction) => {

@@ -7,7 +7,6 @@ import { authService } from "../services/authService";
 class AuthController {
   public async login(req: Request, res: Response, next: NextFunction) {
     try {
-      // Выполняем авторизацию и получаем токен
       const dto = req.body as IUser;
       const token = await authService.login(dto);
       res.status(201).json(token);
@@ -31,6 +30,27 @@ class AuthController {
       const jwtPayload = req.res.locals.payload as ITokenPayload;
       const result = await authService.refresh(token, jwtPayload);
       res.status(201).json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const tokenId = req.res.locals.tokenId as string;
+      const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
+      await authService.logout(jwtPayload, tokenId);
+      res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async logoutAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const jwtPayload = req.res.locals.jwtPayload as ITokenPayload;
+      await authService.logoutAll(jwtPayload);
+      res.sendStatus(204);
     } catch (e) {
       next(e);
     }
