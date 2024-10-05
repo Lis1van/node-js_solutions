@@ -1,7 +1,14 @@
+import { ActionTokenEnum } from "../enums/actionTokenEnum";
 import { EmailEnum } from "../enums/emailEnum";
 import { ApiError } from "../errors/apiError";
 import { ITokenPair, ITokenPayload } from "../interfaces/tokenInterface";
-import { IUser, UserRegistration } from "../interfaces/userInterface";
+import {
+  IUser,
+  PasswordEmail,
+  PasswordReset,
+  UserRegistration,
+} from "../interfaces/userInterface";
+import { actionTokenRepository } from "../repositories/actionTokenRepository";
 import { tokenRepository } from "../repositories/tokenRepository";
 import { userRepository } from "../repositories/userRepository";
 import { emailService } from "./emailService";
@@ -23,9 +30,20 @@ class AuthService {
       role: user.role,
     });
 
+    const token = await tokenService.generateActionToken(
+      { userId: user._id, role: user.role },
+      ActionTokenEnum.VERIFY_EMAIL,
+    );
+    await actionTokenRepository.create({
+      token,
+      type: ActionTokenEnum.VERIFY_EMAIL,
+      _userId: user._id,
+    });
+
     await tokenRepository.generateToken({ ...tokens, _userId: user._id });
-    await emailService.sendMail(EmailEnum.WELCOME, "gameinoriginal@gmail.com", {
+    await emailService.sendMail(EmailEnum.WELCOME, user.email, {
       name: user.name,
+      actionToken: token,
     });
     return { user, tokens };
   }
@@ -80,7 +98,7 @@ class AuthService {
   ): Promise<void> {
     const user = await userRepository.getById(jwtPayload.userId);
     await tokenRepository.deleteByParams({ _id: tokenId });
-    await emailService.sendMail(EmailEnum.LOGOUT, "gameinoriginal@gmail.com", {
+    await emailService.sendMail(EmailEnum.LOGOUT, user.email, {
       name: user.name,
     });
   }
@@ -88,13 +106,53 @@ class AuthService {
   public async logoutAll(jwtPayload: ITokenPayload): Promise<void> {
     const user = await userRepository.getById(jwtPayload.userId);
     await tokenRepository.deleteManyByParams({ _userId: jwtPayload.userId });
-    await emailService.sendMail(
-      EmailEnum.LOGOUT_ALL,
-      "gameinoriginal@gmail.com",
-      {
-        name: user.name,
-      },
+    await emailService.sendMail(EmailEnum.LOGOUT_ALL, user.email, {
+      name: user.name,
+    });
+  }
+
+  public async forgotPasswordEmail(dto: PasswordEmail): Promise<void> {
+    const user = await userRepository.getByEmail(dto.email);
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+
+    const token = await tokenService.generateActionToken(
+      { userId: user._id, role: user.role },
+      ActionTokenEnum.FORGOT_PASSWORD,
     );
+    await actionTokenRepository.create({
+      token,
+      type: ActionTokenEnum.FORGOT_PASSWORD,
+      _userId: user._id,
+    });
+
+    await emailService.sendMail(EmailEnum.FORGOT_PASSWORD, user.email, {
+      name: user.name,
+      email: user.email,
+      actionToken: token,
+    });
+  }
+
+  public async forgotPasswordReset(
+    dto: PasswordReset,
+    jwtPayload: ITokenPayload,
+  ): Promise<void> {
+    const password = await passwordService.hash(dto.password);
+    await userRepository.updateById(jwtPayload.userId, { password });
+    await actionTokenRepository.deleteManyByParams({
+      _userId: jwtPayload.userId,
+      type: ActionTokenEnum.FORGOT_PASSWORD,
+    });
+    await tokenRepository.deleteManyByParams({ _userId: jwtPayload.userId });
+  }
+
+  public async verifyEmail(jwtPayload: ITokenPayload): Promise<void> {
+    await userRepository.updateById(jwtPayload.userId, { isVerified: true });
+    await actionTokenRepository.deleteManyByParams({
+      _userId: jwtPayload.userId,
+      type: ActionTokenEnum.VERIFY_EMAIL,
+    });
   }
 
   private async isEmailExistOrThrow(email: string): Promise<void> {

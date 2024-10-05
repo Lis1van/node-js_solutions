@@ -4,4 +4,5 @@ export enum EmailEnum {
   OLD_VISIT = "old-visit",
   LOGOUT = "logout",
   LOGOUT_ALL = "logout-all",
+  // VERIFY_EMAIL = "verify-email",
 }

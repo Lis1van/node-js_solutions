@@ -10,8 +10,8 @@ const userSchema = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 8 },
     role: { type: String, default: RoleEnum.USER, enum: RoleEnum },
-    isVerified: { type: Boolean, required: false },
-    isDeleted: { type: Boolean, required: false },
+    isVerified: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

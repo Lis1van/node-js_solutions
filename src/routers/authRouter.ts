@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { authController } from "../controllers/authController";
+import { ActionTokenEnum } from "../enums/actionTokenEnum";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { commonMiddleware } from "../middlewares/commonMiddleware";
 import { UserValidator } from "../validators/userValidator";
@@ -35,6 +36,20 @@ authRouter.post(
   "/logout/all",
   authMiddleware.checkAccessToken,
   authController.logoutAll,
+);
+
+authRouter.post("/forgot-password", authController.forgotPasswordEmail);
+
+authRouter.put(
+  "/forgot-password",
+  authMiddleware.checkActionToken(ActionTokenEnum.FORGOT_PASSWORD),
+  authController.forgotPasswordReset,
+);
+
+authRouter.post(
+  "/verify",
+  authMiddleware.checkActionToken(ActionTokenEnum.VERIFY_EMAIL),
+  authController.verifyEmail,
 );
 
 export { authRouter };
