@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import * as mongoose from "mongoose";
 
 import { config } from "./configs/config";
+import { testCron } from "./crons";
 import { ApiError } from "./errors/apiError";
 import { authRouter } from "./routers/authRouter";
 import { userRouter } from "./routers/userRouter";
@@ -34,5 +35,6 @@ process.on("uncaughtException", (err) => {
 
 app.listen(config.port, async () => {
   await mongoose.connect(config.MONGOOSE_URI);
+  testCron();
   console.log(`Server is running on http://${config.host}:${config.port}`);
 });

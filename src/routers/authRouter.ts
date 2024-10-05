@@ -47,6 +47,13 @@ authRouter.put(
 );
 
 authRouter.post(
+  "/change-password",
+  authMiddleware.checkAccessToken,
+  commonMiddleware.isBodyValid(UserValidator.changePassword),
+  authController.changePassword,
+);
+
+authRouter.post(
   "/verify",
   authMiddleware.checkActionToken(ActionTokenEnum.VERIFY_EMAIL),
   authController.verifyEmail,

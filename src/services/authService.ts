@@ -4,6 +4,7 @@ import { ApiError } from "../errors/apiError";
 import { ITokenPair, ITokenPayload } from "../interfaces/tokenInterface";
 import {
   IUser,
+  PasswordChange,
   PasswordEmail,
   PasswordReset,
   UserRegistration,
@@ -144,6 +145,23 @@ class AuthService {
       _userId: jwtPayload.userId,
       type: ActionTokenEnum.FORGOT_PASSWORD,
     });
+    await tokenRepository.deleteManyByParams({ _userId: jwtPayload.userId });
+  }
+
+  public async changePassword(
+    jwtPayload: ITokenPayload,
+    dto: PasswordChange,
+  ): Promise<void> {
+    const user = await userRepository.getById(jwtPayload.userId);
+    const isPasswordValid = await passwordService.compare(
+      dto.oldPassword,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new ApiError("Invalid old password", 401);
+    }
+    const password = await passwordService.hash(dto.password);
+    await userRepository.updateById(jwtPayload.userId, { password });
     await tokenRepository.deleteManyByParams({ _userId: jwtPayload.userId });
   }
 

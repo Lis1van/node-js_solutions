@@ -31,4 +31,12 @@ export class UserValidator {
       password: userFields.password.required(),
     },
   });
+
+  public static changePassword = joi.object({
+    ...userFields,
+    ...{
+      oldPassword: userFields.password.required(),
+      password: userFields.password.required(),
+    },
+  });
 }
