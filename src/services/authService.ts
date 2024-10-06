@@ -73,6 +73,24 @@ class AuthService {
 
     await tokenRepository.generateToken({ ...tokens, _userId: user._id });
 
+    // Генерируем токен для верификации
+    const verificationToken = await tokenService.generateActionToken(
+      { userId: user._id, role: user.role },
+      ActionTokenEnum.VERIFY_EMAIL,
+    );
+
+    await actionTokenRepository.create({
+      token: verificationToken,
+      type: ActionTokenEnum.VERIFY_EMAIL,
+      _userId: user._id,
+    });
+
+    // Отправляем email с токеном для верификации
+    await emailService.sendMail(EmailEnum.VERIFY_EMAIL, user.email, {
+      name: user.name,
+      actionToken: verificationToken,
+    });
+
     return { user, tokens };
   }
 

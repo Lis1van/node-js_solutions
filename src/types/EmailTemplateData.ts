@@ -16,8 +16,8 @@ export type EmailTemplateData = {
   [EmailEnum.OLD_VISIT]: SelectPropertiesType<PersonalEmailData, "email">;
   [EmailEnum.LOGOUT]: SelectPropertiesType<PersonalEmailData, "name">;
   [EmailEnum.LOGOUT_ALL]: SelectPropertiesType<PersonalEmailData, "name">;
-  // [EmailEnum.VERIFY_EMAIL]: SelectPropertiesType<
-  //   PersonalEmailData,
-  //   "name" | "actionToken"
-  // >;
+  [EmailEnum.VERIFY_EMAIL]: SelectPropertiesType<
+    PersonalEmailData,
+    "name" | "actionToken"
+  >;
 };

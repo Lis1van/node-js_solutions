@@ -21,4 +21,8 @@ export const emailConstants = {
     subject: "Logout all devices",
     template: "logout-all",
   },
+  [EmailEnum.VERIFY_EMAIL]: {
+    subject: "Verify your email",
+    template: "verify-email",
+  },
 };
