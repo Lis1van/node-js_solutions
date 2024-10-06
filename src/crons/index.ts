@@ -1,7 +1,11 @@
-import { deleteOldTokens } from "./deleteOldTokens";
+import { deleteOldPasswordCron } from "./deleteOldPasswordCron";
+import { deleteOldTokensCron } from "./deleteOldTokensCron";
+import { oldVisitCron } from "./oldVisitCrone";
 // import { testCronJob } from "./testCron";
 
 export const testCron = () => {
   // testCronJob.start();
-  deleteOldTokens.start();
+  deleteOldTokensCron.start();
+  deleteOldPasswordCron.start();
+  oldVisitCron.start();
 };

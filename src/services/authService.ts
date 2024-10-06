@@ -10,6 +10,7 @@ import {
   UserRegistration,
 } from "../interfaces/userInterface";
 import { actionTokenRepository } from "../repositories/actionTokenRepository";
+import { oldPasswordRepository } from "../repositories/oldPasswordRepository";
 import { tokenRepository } from "../repositories/tokenRepository";
 import { userRepository } from "../repositories/userRepository";
 import { emailService } from "./emailService";
@@ -73,6 +74,24 @@ class AuthService {
     });
 
     await tokenRepository.generateToken({ ...tokens, _userId: user._id });
+
+    // Генерируем токен для верификации
+    const verificationToken = await tokenService.generateActionToken(
+      { userId: user._id, role: user.role },
+      ActionTokenEnum.VERIFY_EMAIL,
+    );
+
+    await actionTokenRepository.create({
+      token: verificationToken,
+      type: ActionTokenEnum.VERIFY_EMAIL,
+      _userId: user._id,
+    });
+
+    // Отправляем email с токеном для верификации
+    await emailService.sendMail(EmailEnum.VERIFY_EMAIL, user.email, {
+      name: user.name,
+      actionToken: verificationToken,
+    });
 
     return { user, tokens };
   }
@@ -152,16 +171,37 @@ class AuthService {
     jwtPayload: ITokenPayload,
     dto: PasswordChange,
   ): Promise<void> {
-    const user = await userRepository.getById(jwtPayload.userId);
-    const isPasswordValid = await passwordService.compare(
+    const [user, oldPasswords] = await Promise.all([
+      userRepository.getById(jwtPayload.userId),
+      oldPasswordRepository.findByParams(jwtPayload.userId),
+    ]);
+    const isPasswordCorrect = await passwordService.compare(
       dto.oldPassword,
       user.password,
     );
-    if (!isPasswordValid) {
-      throw new ApiError("Invalid old password", 401);
+    if (!isPasswordCorrect) {
+      throw new ApiError("Invalid previous password", 401);
     }
+
+    const passwords = [...oldPasswords, { password: user.password }];
+    await Promise.all(
+      passwords.map(async (oldPassword) => {
+        const isPrevious = await passwordService.compare(
+          dto.password,
+          oldPassword.password,
+        );
+        if (isPrevious) {
+          throw new ApiError("Password already used", 409);
+        }
+      }),
+    );
+
     const password = await passwordService.hash(dto.password);
     await userRepository.updateById(jwtPayload.userId, { password });
+    await oldPasswordRepository.create({
+      _userId: jwtPayload.userId,
+      password: user.password,
+    });
     await tokenRepository.deleteManyByParams({ _userId: jwtPayload.userId });
   }
 

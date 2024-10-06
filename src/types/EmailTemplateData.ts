@@ -13,11 +13,11 @@ export type EmailTemplateData = {
     "name" | "email" | "actionToken"
   >;
 
-  [EmailEnum.OLD_VISIT]: SelectPropertiesType<PersonalEmailData, "email">;
+  [EmailEnum.OLD_VISIT]: SelectPropertiesType<PersonalEmailData, "name">;
   [EmailEnum.LOGOUT]: SelectPropertiesType<PersonalEmailData, "name">;
   [EmailEnum.LOGOUT_ALL]: SelectPropertiesType<PersonalEmailData, "name">;
-  // [EmailEnum.VERIFY_EMAIL]: SelectPropertiesType<
-  //   PersonalEmailData,
-  //   "name" | "actionToken"
-  // >;
+  [EmailEnum.VERIFY_EMAIL]: SelectPropertiesType<
+    PersonalEmailData,
+    "name" | "actionToken"
+  >;
 };
