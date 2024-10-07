@@ -7,6 +7,7 @@ export interface IUser {
   password: string;
   age: number;
   role: RoleEnum;
+  avatar?: string;
   isVerified: boolean;
   isDeleted: boolean;
   createdAt?: Date;

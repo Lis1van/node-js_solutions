@@ -9,6 +9,7 @@ const userSchema = new Schema(
     age: { type: Number, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 8 },
+    avatar: { type: String, required: false },
     role: { type: String, default: RoleEnum.USER, enum: RoleEnum },
     isVerified: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },

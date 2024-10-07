@@ -1,8 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
+import fileUpload from "express-fileupload";
 import * as mongoose from "mongoose";
 
 import { config } from "./configs/config";
-import { testCron } from "./crons";
+import { cronRunner } from "./crons";
 import { ApiError } from "./errors/apiError";
 import { authRouter } from "./routers/authRouter";
 import { userRouter } from "./routers/userRouter";
@@ -11,6 +12,12 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 
 app.use("/users", userRouter);
 app.use("/auth", authRouter);
@@ -35,6 +42,6 @@ process.on("uncaughtException", (err) => {
 
 app.listen(config.port, async () => {
   await mongoose.connect(config.MONGOOSE_URI);
-  testCron();
+  cronRunner();
   console.log(`Server is running on http://${config.host}:${config.port}`);
 });
