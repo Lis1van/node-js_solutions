@@ -2,14 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 
 import { ITokenPayload } from "../interfaces/tokenInterface";
-import { IUser } from "../interfaces/userInterface";
+import { IUser, IUserListQuery } from "../interfaces/userInterface";
 import { userPresenter } from "../presenters/userPresenter";
 import { userService } from "../services/userService";
 
 class UserController {
   public async getList(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await userService.getList();
+      const query = req.query as unknown as IUserListQuery;
+      const result = await userService.getList(query);
       res.json(result);
     } catch (e) {
       next(e);

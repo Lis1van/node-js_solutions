@@ -1,6 +1,8 @@
 import joi from "joi";
 
 import { regexConstants } from "../constants/regexConstants";
+import { OrderEnum } from "../enums/orderEnum";
+import { UserListOrderEnum } from "../enums/userListOrderEnum";
 
 const userFields = {
   name: joi.string().trim().regex(regexConstants.NAME_REGEX),
@@ -38,5 +40,13 @@ export class UserValidator {
       oldPassword: userFields.password.required(),
       password: userFields.password.required(),
     },
+  });
+
+  public static listQuery = joi.object({
+    limit: joi.number().min(1).max(100).default(10),
+    page: joi.number().min(1).default(1),
+    search: joi.string().trim().lowercase(),
+    order: joi.string().valid(...Object.values(OrderEnum)),
+    orderBy: joi.string().valid(...Object.values(UserListOrderEnum)),
   });
 }
