@@ -17,26 +17,7 @@ class TokenService {
     });
     return { accessToken, refreshToken };
   }
-  // public verifyToken(
-  //   token: string,
-  //   type: TokenEnum,
-  // ): ITokenPayload | undefined {
-  //   try {
-  //     let secret: string;
-  //     switch (type) {
-  //       case TokenEnum.ACCESS:
-  //         secret = config.JWT_ACCESS_SECRET;
-  //         break;
-  //       case TokenEnum.REFRESH:
-  //         secret = config.JWT_REFRESH_SECRET;
-  //         break;
-  //     }
-  //     return jsonwebtoken.verify(token, secret) as ITokenPayload;
-  //   } catch (e) {
-  //     console.error(e);
-  //     throw new ApiError("Invalid token", 401);
-  //   }
-  // }
+
   public verifyToken(
     token: string,
     type: TokenEnum | ActionTokenEnum,
@@ -92,26 +73,6 @@ class TokenService {
     }
     return jsonwebtoken.sign(payload, secret, { expiresIn });
   }
-
-  // public verifyAccessToken(
-  //   token: string,
-  //   type: ActionTokenEnum,
-  // ): ITokenPayload | undefined {
-  //   try {
-  //     let secret: string;
-  //     switch (type) {
-  //       case ActionTokenEnum.FORGOT_PASSWORD:
-  //         secret = config.ACTION_FORGOT_PASSWORD_SECRET;
-  //         break;
-  //       default:
-  //         throw new ApiError("Invalid action token type", 400);
-  //     }
-  //     return jsonwebtoken.verify(token, secret) as ITokenPayload;
-  //   } catch (e) {
-  //     console.error(e);
-  //     throw new ApiError("Invalid token", 401);
-  //   }
-  // }
 }
 
 export const tokenService = new TokenService();

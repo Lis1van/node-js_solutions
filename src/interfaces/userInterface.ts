@@ -1,6 +1,7 @@
 import { OrderEnum } from "../enums/orderEnum";
 import { RoleEnum } from "../enums/roleEnum";
 import { UserListOrderEnum } from "../enums/userListOrderEnum";
+import { SelectPropertiesType } from "../types/SelectPropertiesType";
 
 export interface IUser {
   _id?: string;
@@ -31,15 +32,9 @@ export interface IUserListQuery {
 
 export type IUserResponse = Pick<
   IUser,
-  | "_id"
-  | "name"
-  | "email"
-  | "age"
-  | "role"
-  | "avatar"
-  | "isDeleted"
-  | "isVerified"
->;
+  "name" | "email" | "age" | "role" | "avatar" | "isDeleted" | "isVerified"
+> &
+  SelectPropertiesType<IUser, "_id" | "createdAt">;
 
 export interface IUserListResponse {
   data: IUserResponse[];

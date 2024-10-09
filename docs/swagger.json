@@ -1,0 +1,425 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API для управления аутентификацией и пользователями.",
+    "version": "1.0.0",
+    "title": "Auth and User API"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Операции, связанные с аутентификацией"
+    },
+    {
+      "name": "Users",
+      "description": "Операции, связанные с пользователями"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Авторизация пользователя",
+        "description": "Позволяет пользователю войти в систему.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Данные для входа",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserLogin"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Успешная авторизация",
+            "schema": {
+              "$ref": "#/definitions/AuthToken"
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Регистрация нового пользователя",
+        "description": "Регистрация нового пользователя в системе.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Данные для регистрации",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRegistration"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Успешная регистрация",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Обновление токена",
+        "description": "Обновление access токена с использованием refresh токена.",
+        "produces": ["application/json"],
+        "responses": {
+          "201": {
+            "description": "Новый access и refresh токены",
+            "schema": {
+              "$ref": "#/definitions/AuthToken"
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Выход из системы",
+        "description": "Выход пользователя из системы.",
+        "responses": {
+          "204": {
+            "description": "Успешный выход"
+          }
+        }
+      }
+    },
+    "/auth/logout/all": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Выход со всех устройств",
+        "description": "Выход пользователя со всех устройств.",
+        "responses": {
+          "204": {
+            "description": "Успешный выход со всех устройств"
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Отправка email для восстановления пароля",
+        "description": "Отправка письма для восстановления пароля на почту.",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Email для восстановления пароля",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PasswordEmail"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Письмо отправлено"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Сброс пароля",
+        "description": "Сброс пароля с использованием кода из email.",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Новый пароль",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PasswordReset"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Пароль успешно сброшен"
+          }
+        }
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Смена пароля",
+        "description": "Изменение пароля авторизованного пользователя.",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Данные для смены пароля",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PasswordChange"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Пароль успешно изменен"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Получение списка пользователей",
+        "description": "Получение списка всех зарегистрированных пользователей.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Количество пользователей на странице",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Номер страницы",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список пользователей",
+            "schema": {
+              "$ref": "#/definitions/UserList"
+            }
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Получение информации о текущем пользователе",
+        "description": "Возвращает данные текущего авторизованного пользователя.",
+        "responses": {
+          "200": {
+            "description": "Данные текущего пользователя",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Обновление информации о текущем пользователе",
+        "description": "Обновление данных текущего авторизованного пользователя.",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Новые данные пользователя",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация обновлена",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Удаление аккаунта текущего пользователя",
+        "description": "Удаление учетной записи текущего пользователя.",
+        "responses": {
+          "204": {
+            "description": "Аккаунт удален"
+          }
+        }
+      }
+    },
+    "/users/me/avatar": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Загрузка аватара",
+        "description": "Загрузка аватара для текущего пользователя.",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "avatar",
+            "type": "file",
+            "description": "Аватар пользователя",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Аватар загружен",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Удаление аватара",
+        "description": "Удаление аватара текущего пользователя.",
+        "responses": {
+          "204": {
+            "description": "Аватар удален"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Получение информации о пользователе по ID",
+        "description": "Возвращает данные пользователя по его ID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID пользователя"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о пользователе",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "UserRegistration": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": ["email", "password", "name"]
+    },
+    "UserLogin": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": ["email", "password"]
+    },
+    "UserList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/User"
+      }
+    },
+    "PasswordEmail": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      },
+      "required": ["email"]
+    },
+    "PasswordReset": {
+      "type": "object",
+      "properties": {
+        "newPassword": {
+          "type": "string"
+        }
+      },
+      "required": ["newPassword"]
+    },
+    "PasswordChange": {
+      "type": "object",
+      "properties": {
+        "oldPassword": {
+          "type": "string"
+        },
+        "newPassword": {
+          "type": "string"
+        }
+      },
+      "required": ["oldPassword", "newPassword"]
+    },
+    "AuthToken": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
