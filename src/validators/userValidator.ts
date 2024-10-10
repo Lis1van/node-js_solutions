@@ -12,6 +12,7 @@ const userFields = {
 };
 
 export class UserValidator {
+  // Схема для регистрации (проверяет все поля)
   public static createUserSchema = joi.object({
     ...userFields,
     ...{
@@ -20,6 +21,12 @@ export class UserValidator {
       email: userFields.email.required(),
       password: userFields.password.required(),
     },
+  });
+
+  // Схема для логина (только email и password)
+  public static loginUserSchema = joi.object({
+    email: userFields.email.required(),
+    password: userFields.password.required(),
   });
 
   public static updateUserSchema = joi.object({
@@ -35,11 +42,8 @@ export class UserValidator {
   });
 
   public static changePassword = joi.object({
-    ...userFields,
-    ...{
-      oldPassword: userFields.password.required(),
-      password: userFields.password.required(),
-    },
+    oldPassword: userFields.password.required(),
+    password: userFields.password.required(),
   });
 
   public static listQuery = joi.object({

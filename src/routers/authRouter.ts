@@ -10,13 +10,13 @@ const authRouter = Router();
 
 authRouter.post(
   "/login",
-  commonMiddleware.isBodyValid(UserValidator.createUserSchema),
+  commonMiddleware.isBodyValid(UserValidator.loginUserSchema), // должна быть схема для логина
   authController.login,
 );
 
 authRouter.post(
   "/register",
-  commonMiddleware.isBodyValid(UserValidator.registerUserSchema),
+  commonMiddleware.isBodyValid(UserValidator.createUserSchema), // должна быть схема для регистрации
   authController.register,
 );
 
