@@ -17,8 +17,19 @@
       "description": "Операции, связанные с пользователями"
     }
   ],
-  "schemes": [
-    "http"
+  "schemes": ["http"],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Введите токен в формате: Bearer {token}"
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
   ],
   "paths": {
     "/auth/login": {
@@ -44,6 +55,18 @@
             "description": "Успешная авторизация",
             "schema": {
               "$ref": "#/definitions/AuthToken"
+            }
+          },
+          "401": {
+            "description": "Ошибка авторизации — неверные учетные данные",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Неправильный email или пароль"
+                }
+              }
             }
           }
         }
@@ -89,6 +112,18 @@
             "schema": {
               "$ref": "#/definitions/AuthToken"
             }
+          },
+          "401": {
+            "description": "Ошибка — недействительный refresh токен",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Refresh токен недействителен или отсутствует"
+                }
+              }
+            }
           }
         }
       }
@@ -101,6 +136,18 @@
         "responses": {
           "204": {
             "description": "Успешный выход"
+          },
+          "401": {
+            "description": "Ошибка авторизации — неверный токен",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Неверный или отсутствующий токен"
+                }
+              }
+            }
           }
         }
       }
@@ -113,6 +160,18 @@
         "responses": {
           "204": {
             "description": "Успешный выход со всех устройств"
+          },
+          "401": {
+            "description": "Ошибка авторизации — неверный токен",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Неверный или отсутствующий токен"
+                }
+              }
+            }
           }
         }
       }
@@ -139,28 +198,6 @@
             "description": "Письмо отправлено"
           }
         }
-      },
-      "put": {
-        "tags": ["Auth"],
-        "summary": "Сброс пароля",
-        "description": "Сброс пароля с использованием кода из email.",
-        "consumes": ["application/json"],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Новый пароль",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/PasswordReset"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Пароль успешно сброшен"
-          }
-        }
       }
     },
     "/auth/change-password": {
@@ -183,6 +220,18 @@
         "responses": {
           "204": {
             "description": "Пароль успешно изменен"
+          },
+          "401": {
+            "description": "Ошибка авторизации — неверный токен",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Неверный или отсутствующий токен"
+                }
+              }
+            }
           }
         }
       }
@@ -191,7 +240,12 @@
       "get": {
         "tags": ["Users"],
         "summary": "Получение списка пользователей",
-        "description": "Получение списка всех зарегистрированных пользователей.",
+        "description": "Получение списка всех зарегистрированных пользователей. Требуется авторизация.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -214,6 +268,18 @@
             "schema": {
               "$ref": "#/definitions/UserList"
             }
+          },
+          "401": {
+            "description": "Ошибка авторизации — неверный токен",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Неверный или отсутствующий токен"
+                }
+              }
+            }
           }
         }
       }
@@ -223,11 +289,28 @@
         "tags": ["Users"],
         "summary": "Получение информации о текущем пользователе",
         "description": "Возвращает данные текущего авторизованного пользователя.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Данные текущего пользователя",
             "schema": {
               "$ref": "#/definitions/User"
+            }
+          },
+          "401": {
+            "description": "Ошибка авторизации — неверный токен",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Неверный или отсутствующий токен"
+                }
+              }
             }
           }
         }
@@ -237,6 +320,11 @@
         "summary": "Обновление информации о текущем пользователе",
         "description": "Обновление данных текущего авторизованного пользователя.",
         "consumes": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "in": "body",
@@ -254,74 +342,17 @@
             "schema": {
               "$ref": "#/definitions/User"
             }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["Users"],
-        "summary": "Удаление аккаунта текущего пользователя",
-        "description": "Удаление учетной записи текущего пользователя.",
-        "responses": {
-          "204": {
-            "description": "Аккаунт удален"
-          }
-        }
-      }
-    },
-    "/users/me/avatar": {
-      "post": {
-        "tags": ["Users"],
-        "summary": "Загрузка аватара",
-        "description": "Загрузка аватара для текущего пользователя.",
-        "consumes": ["multipart/form-data"],
-        "parameters": [
-          {
-            "in": "formData",
-            "name": "avatar",
-            "type": "file",
-            "description": "Аватар пользователя",
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Аватар загружен",
+          },
+          "401": {
+            "description": "Ошибка авторизации — неверный токен",
             "schema": {
-              "$ref": "#/definitions/User"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["Users"],
-        "summary": "Удаление аватара",
-        "description": "Удаление аватара текущего пользователя.",
-        "responses": {
-          "204": {
-            "description": "Аватар удален"
-          }
-        }
-      }
-    },
-    "/users/{userId}": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "Получение информации о пользователе по ID",
-        "description": "Возвращает данные пользователя по его ID.",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "ID пользователя"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Информация о пользователе",
-            "schema": {
-              "$ref": "#/definitions/User"
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Неверный или отсутствующий токен"
+                }
+              }
             }
           }
         }
@@ -329,50 +360,67 @@
     }
   },
   "definitions": {
-    "User": {
+    "UserLogin": {
       "type": "object",
+      "required": ["email", "password"],
       "properties": {
-        "id": {
-          "type": "string"
-        },
         "email": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "createdAt": {
           "type": "string",
-          "format": "date-time"
+          "example": "user@example.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password123"
         }
       }
     },
     "UserRegistration": {
       "type": "object",
+      "required": ["email", "password", "name"],
       "properties": {
         "email": {
-          "type": "string"
+          "type": "string",
+          "example": "user@example.com"
         },
         "password": {
-          "type": "string"
+          "type": "string",
+          "example": "password123"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "example": "John Doe"
         }
-      },
-      "required": ["email", "password", "name"]
+      }
     },
-    "UserLogin": {
+    "AuthToken": {
       "type": "object",
       "properties": {
-        "email": {
-          "type": "string"
+        "accessToken": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         },
-        "password": {
-          "type": "string"
+        "refreshToken": {
+          "type": "string",
+          "example": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4gZXhhbXBsZQ=="
         }
-      },
-      "required": ["email", "password"]
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "123456"
+        },
+        "email": {
+          "type": "string",
+          "example": "user@example.com"
+        },
+        "name": {
+          "type": "string",
+          "example": "John Doe"
+        }
+      }
     },
     "UserList": {
       "type": "array",
@@ -384,40 +432,21 @@
       "type": "object",
       "properties": {
         "email": {
-          "type": "string"
+          "type": "string",
+          "example": "user@example.com"
         }
-      },
-      "required": ["email"]
-    },
-    "PasswordReset": {
-      "type": "object",
-      "properties": {
-        "newPassword": {
-          "type": "string"
-        }
-      },
-      "required": ["newPassword"]
+      }
     },
     "PasswordChange": {
       "type": "object",
       "properties": {
         "oldPassword": {
-          "type": "string"
+          "type": "string",
+          "example": "oldPassword123"
         },
         "newPassword": {
-          "type": "string"
-        }
-      },
-      "required": ["oldPassword", "newPassword"]
-    },
-    "AuthToken": {
-      "type": "object",
-      "properties": {
-        "accessToken": {
-          "type": "string"
-        },
-        "refreshToken": {
-          "type": "string"
+          "type": "string",
+          "example": "newPassword123"
         }
       }
     }
